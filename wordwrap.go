@@ -4,7 +4,26 @@ import (
 	"bytes"
 	_ "fmt"
 	"io"
+	"bufio"
 )
+
+/*
+	If all the text has newlines around 80 then return 80 because
+	it's wrapped to that.
+*/
+func findSoftwrap(r io.Reader) (res int) {
+	s := bufio.NewScanner(r)
+	for {
+		ok := s.Scan()
+		if !ok {
+			if s.Err == nil {
+				break
+			}
+		}
+	}
+	return 80 // TODO 	
+
+}
 
 func findMark(data []byte, wrap int) (res int) {
 	res = wrap
@@ -25,22 +44,6 @@ func findMark(data []byte, wrap int) (res int) {
 		}
 	}
 	return
-}
-
-// Delete up to n old bytes from s
-// if n < 0 delete them all
-func rmByte(s, old []byte, n int) []byte {
-	m := bytes.Index(s, old)
-	res := s[:]
-	c := 0
-	for m != -1 {
-		res = append(res[:m], res[m+1:]...)
-		c++
-		if c == n {
-			break
-		}
-	}
-	return res
 }
 
 // Wrapit(r, 4, cb) would call cb at or before every
@@ -64,7 +67,7 @@ loop:
 			buf = append(frag, buf[:n]...)
 			frag = []byte{}
 			s = append(s, buf...)
-			s = bytes.Replace(s, []byte{'\n'}, nil, -1)
+			//s = bytes.Replace(s, []byte{'\n'}, nil, -1)
 			if err != nil {
 				cb(s)
 				break loop

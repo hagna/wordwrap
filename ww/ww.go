@@ -18,6 +18,9 @@ func IsFile(fname string) bool {
 	return false
 }
 
+
+
+
 func main() {
 	usestdin := true
 	var bi *bufio.Reader
